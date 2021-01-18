@@ -3,6 +3,8 @@ package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -11,6 +13,9 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class IndexService {
@@ -58,6 +63,26 @@ public class IndexService {
                     stmt.getObject().toString());
             this.addRemoteFile(stmt.getObject().stringValue());
         }
+    }
+
+    public Map<String,String> getAllModels() {
+        String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
+        "PREFIX fml: <https://fairmodels.org/ontology.owl#> " +
+        "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> " +
+        "SELECT ?model ?label " +
+        "WHERE { " +
+	        "?model rdf:type fml:Model. " +
+            "?model rdfs:label ?label. " +
+        "}";
+
+        Map<String, String> retResult = new HashMap<String, String>();
+        TupleQueryResult result = this.conn.prepareTupleQuery(query).evaluate();
+        while(result.hasNext()) {
+            BindingSet bs = result.next();
+            retResult.put(bs.getValue("model").stringValue(), bs.getValue("label").stringValue());
+        }
+
+        return retResult;
     }
 
 }
