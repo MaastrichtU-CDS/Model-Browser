@@ -43,7 +43,8 @@ public class IndexService {
      * @param remoteLocation: string representation of the URL where the turtle file is located
      */
     private void addRemoteFile(String remoteLocation) {
-        this.conn.prepareUpdate("LOAD <" + remoteLocation + "> INTO GRAPH <" + remoteLocation + ">").execute();
+        String query = "LOAD <" + remoteLocation + "> INTO GRAPH <" + remoteLocation + ">";
+        this.conn.prepareUpdate(query).execute();
     }
 
     private void fetchReferencedFiles() {
