@@ -1,8 +1,12 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Prediction;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.RdfRepresentation;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
@@ -14,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -52,6 +58,10 @@ public class IndexService {
         this.conn.prepareUpdate(query).execute();
     }
 
+    /**
+     * Search for the referenced files, as indicated in the index turtle file.
+     * Remote files are added to the current in-memory RDF store.
+     */
     private void fetchReferencedFiles() {
         IRI predicateToSearch = SimpleValueFactory.getInstance().createIRI("https://fairmodels.org/ontology.owl#referencedInformation");
         RepositoryResult<Statement> statements = this.conn.getStatements(null, predicateToSearch,null);
@@ -65,6 +75,10 @@ public class IndexService {
         }
     }
 
+    /**
+     * Retrieve the URI and human-readable label of all available models
+     * @return Map containing the URI as key, and the label as value.
+     */
     public Map<String,String> getAllModels() {
         String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
         "PREFIX fml: <https://fairmodels.org/ontology.owl#> " +
@@ -83,6 +97,41 @@ public class IndexService {
         }
 
         return retResult;
+    }
+
+    private List<IRI> getClassTypesForUri(IRI uri) {
+        RepositoryResult<Statement> statementsType = this.conn.getStatements(uri, RDF.TYPE, null);
+        List<IRI> classTypes = new ArrayList<IRI>();
+        while(statementsType.hasNext()) {
+            classTypes.add((IRI)statementsType.next().getObject());
+        }
+
+        return classTypes;
+    }
+
+    public RdfRepresentation getObjectForUri(IRI uri) {
+        RdfRepresentation returnObject = null;
+
+        List<IRI> classTypes = this.getClassTypesForUri(uri);
+        RepositoryResult<Statement> statementsModel = this.conn.getStatements(uri, null, null);
+        List<Statement> allStatements = new ArrayList<Statement>();
+        while(statementsModel.hasNext()) {
+            allStatements.add(statementsModel.next());
+        }
+
+        if (classTypes.contains(Model.CLASS_URI)) {
+            returnObject = new Model(uri, allStatements, this);
+        }
+
+        if (classTypes.contains(Prediction.CLASS_URI)) {
+            returnObject = new Prediction(uri, allStatements, this);
+        }
+
+        return returnObject;
+    }
+
+    public RdfRepresentation getObjectForUri(String uri) {
+        return getObjectForUri(SimpleValueFactory.getInstance().createIRI(uri));
     }
 
 }

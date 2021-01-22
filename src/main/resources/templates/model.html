@@ -1,0 +1,19 @@
+<html>
+<head>
+    <title>Model Commissioning Station</title>
+</head>
+
+<body>
+<h1 th:utext="${model.label}"/>
+<table>
+        <tr>
+            <td>Objective:</td>
+            <td>
+                <th:block th:each="objective: ${model.objectives}">
+                    <span th:text="${objective.label}"/>
+                </th:block>
+            </td>
+        </tr>
+</table>
+</body>
+</html>
