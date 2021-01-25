@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -26,12 +27,13 @@ public class MainController {
     }
 
     @RequestMapping(value={"/model/**"}, method=RequestMethod.GET)
-    public ModelAndView  indexModel(Model model) {
+    public ModelAndView  indexModel(HttpServletRequest request) {
         Logger logger = Logger.getLogger(this.getClass().toString());
-        logger.info("in model path");
+
+        String modelURI = request.getRequestURI().replaceFirst("/model/", "");
 
         ModelAndView mav = new ModelAndView();
-        RdfRepresentation rdfObject = this.indexService.getObjectForUri("https://fairmodels.org/models/radiotherapy/stiphout_2011.ttl");
+        RdfRepresentation rdfObject = this.indexService.getObjectForUri(modelURI);
 
         if (rdfObject instanceof nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) {
             mav.addObject("model", (nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) rdfObject);
@@ -39,7 +41,8 @@ public class MainController {
             return mav;
         }
 
-        mav.setViewName("index");
+        mav.setViewName("model_not_found");
+        mav.addObject("modelURI", modelURI);
         return mav;
     }
 
