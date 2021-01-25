@@ -29,7 +29,7 @@ import java.util.Map;
 
 @Service
 public class IndexService {
-    public static final String INDEX_URL = "https://fairmodels.org/index.ttl";
+    public static final String INDEX_URL = "https://raw.githubusercontent.com/MaastrichtU-CDS/FAIRmodels/main/index.ttl";
     private final Repository repo;
     private final RepositoryConnection conn;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
