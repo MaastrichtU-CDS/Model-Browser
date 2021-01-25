@@ -14,6 +14,14 @@
                 </th:block>
             </td>
         </tr>
+        <th:block th:each="informationElement: ${model.informationElements}">
+            <tr>
+                <td>Needs information element:</td>
+                <td>
+                    <span th:text="${informationElement.classLabel}"/>
+                </td>
+            </tr>
+        </th:block>
 </table>
 </body>
 </html>

@@ -6,10 +6,10 @@ import org.eclipse.rdf4j.model.Statement;
 
 import java.util.List;
 
-public class Prediction extends RdfRepresentation {
-    public static final IRI CLASS_URI = FML.PREDICTION;
+public class SimpleRdfRepresentation extends RdfRepresentation{
 
-    public Prediction (IRI identifier, List<Statement> statements, IndexService indexService) {
+    public SimpleRdfRepresentation (IRI identifier, List<Statement> statements, IndexService indexService) {
         super(identifier, statements, indexService);
     }
+
 }

@@ -16,4 +16,6 @@ public class Model extends RdfRepresentation {
     public List getObjectives() {
         return this.properties.get(FML.HAS_OBJECTIVE);
     }
+
+    public List getInformationElements() { return this.properties.get(FML.NEEDS_INFORMATION_ELEMENT); }
 }

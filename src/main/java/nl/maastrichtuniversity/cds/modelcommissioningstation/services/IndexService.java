@@ -1,8 +1,6 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
-import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model;
-import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Prediction;
-import nl.maastrichtuniversity.cds.modelcommissioningstation.model.RdfRepresentation;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.*;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
@@ -13,11 +11,17 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParser;
+import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +41,16 @@ public class IndexService {
 
         this.reloadIndex();
         this.fetchReferencedFiles();
+        this.addTerminologyToCache();
+        logger.info("Done loading all models");
+    }
+
+    private void addTerminologyToCache() {
+        try {
+            this.addRemoteFile("https://raw.githubusercontent.com/RadiationOncologyOntology/ROO/master/owl/ROO.owl");
+        } catch (IOException e) {
+            logger.warn("Attempted to load additional ontologies, but failed.", e);
+        }
     }
 
     /**
@@ -46,16 +60,24 @@ public class IndexService {
     public void reloadIndex() {
         this.logger.info("Clear and reload index");
         this.conn.clear(SimpleValueFactory.getInstance().createIRI(IndexService.INDEX_URL));
-        this.addRemoteFile(IndexService.INDEX_URL);
+        try {
+            this.addRemoteFile(IndexService.INDEX_URL);
+        } catch (IOException e) {
+            logger.warn("Index URL is incorrect/malformed (" + IndexService.INDEX_URL + ")");
+        }
     }
 
     /**
      * Add a remote location to the current repository
      * @param remoteLocation: string representation of the URL where the turtle file is located
      */
-    private void addRemoteFile(String remoteLocation) {
-        String query = "LOAD <" + remoteLocation + "> INTO GRAPH <" + remoteLocation + ">";
-        this.conn.prepareUpdate(query).execute();
+    public void addRemoteFile(String remoteLocation) throws IOException {
+        IRI graphIRI = SimpleValueFactory.getInstance().createIRI(remoteLocation);
+        URL documentURL = new URL(remoteLocation);
+        RDFFormat format = Rio.getParserFormatForFileName(documentURL.toString()).orElse(RDFFormat.RDFXML);
+        org.eclipse.rdf4j.model.Model results = Rio.parse(documentURL.openStream(), remoteLocation, format);
+
+        this.conn.add(results, graphIRI);
     }
 
     /**
@@ -71,7 +93,11 @@ public class IndexService {
             logger.debug(stmt.getSubject().toString() + " | " +
                     stmt.getPredicate().toString() + " | " +
                     stmt.getObject().toString());
-            this.addRemoteFile(stmt.getObject().stringValue());
+            try {
+                this.addRemoteFile(stmt.getObject().stringValue());
+            } catch (IOException e) {
+                logger.warn("Could not load/find referenced file " + stmt.getObject().stringValue(), e);
+            }
         }
     }
 
@@ -125,6 +151,14 @@ public class IndexService {
 
         if (classTypes.contains(Prediction.CLASS_URI)) {
             returnObject = new Prediction(uri, allStatements, this);
+        }
+
+        if (classTypes.contains(InformationElement.CLASS_URI)) {
+            returnObject = new InformationElement(uri, allStatements, this);
+        }
+
+        if (returnObject == null) {
+            returnObject = new SimpleRdfRepresentation(uri, allStatements, this);
         }
 
         return returnObject;

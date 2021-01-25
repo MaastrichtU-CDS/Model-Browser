@@ -3,6 +3,7 @@ package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 
@@ -15,19 +16,21 @@ public abstract class RdfRepresentation {
     Map<IRI, List> properties;
     Map<IRI, List> references;
     public final IRI identifier;
+    IndexService indexService;
 
     public RdfRepresentation(IRI identifier, List<Statement> statements, IndexService indexService) {
         this.identifier = identifier;
+        this.indexService = indexService;
         this.properties = new HashMap<IRI, List>();
         this.references = new HashMap<IRI, List>();
-        this.processStatements(statements, indexService);
+        this.processStatements(statements);
     }
 
-    private void processStatements(List<Statement> statements, IndexService indexService) {
+    private void processStatements(List<Statement> statements) {
         for(Statement stmt : statements) {
             if (stmt.getSubject().stringValue().equals(identifier.stringValue())) {
                 if (stmt.getObject() instanceof IRI) {
-                    RdfRepresentation object = indexService.getObjectForUri((IRI) stmt.getObject());
+                    RdfRepresentation object = this.indexService.getObjectForUri((IRI) stmt.getObject());
                     if (object != null) {
                         this.addProperty(stmt.getPredicate(), object);
                     } else {
@@ -70,6 +73,10 @@ public abstract class RdfRepresentation {
             labelFound = this.properties.get(RDFS.LABEL).get(0).toString();
         }
         return labelFound;
+    }
+
+    public IRI getIdentifier() {
+        return this.identifier;
     }
 
     @Override
