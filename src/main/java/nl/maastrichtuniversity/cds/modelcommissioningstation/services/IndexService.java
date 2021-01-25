@@ -29,7 +29,7 @@ import java.util.Map;
 
 @Service
 public class IndexService {
-    public static final String INDEX_URL = "https://raw.githubusercontent.com/MaastrichtU-CDS/FAIRmodels/main/index.ttl";
+    public static final String INDEX_URL = "https://fairmodels.org/index.ttl";
     private final Repository repo;
     private final RepositoryConnection conn;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -41,16 +41,7 @@ public class IndexService {
 
         this.reloadIndex();
         this.fetchReferencedFiles();
-        this.addTerminologyToCache();
         logger.info("Done loading all models");
-    }
-
-    private void addTerminologyToCache() {
-        try {
-            this.addRemoteFile("https://raw.githubusercontent.com/RadiationOncologyOntology/ROO/master/owl/ROO.owl");
-        } catch (IOException e) {
-            logger.warn("Attempted to load additional ontologies, but failed.", e);
-        }
     }
 
     /**
