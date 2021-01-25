@@ -31,6 +31,7 @@ public class MainController {
         Logger logger = Logger.getLogger(this.getClass().toString());
 
         String modelURI = request.getRequestURI().replaceFirst("/model/", "");
+        logger.info("Searching for: " + modelURI);
 
         ModelAndView mav = new ModelAndView();
         RdfRepresentation rdfObject = this.indexService.getObjectForUri(modelURI);
