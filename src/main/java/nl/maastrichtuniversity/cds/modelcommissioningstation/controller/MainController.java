@@ -26,15 +26,13 @@ public class MainController {
         return "index";
     }
 
-    @RequestMapping(value={"/model/**"}, method=RequestMethod.GET)
-    public ModelAndView  indexModel(HttpServletRequest request) {
+    @RequestMapping(value={"/model"}, method=RequestMethod.GET)
+    public ModelAndView  indexModel(@RequestParam("uri") String uri) {
         Logger logger = Logger.getLogger(this.getClass().toString());
-
-        String modelURI = request.getRequestURI().replaceFirst("/model/", "");
-        logger.info("Searching for: " + modelURI);
+        logger.info("Searching for: " + uri);
 
         ModelAndView mav = new ModelAndView();
-        RdfRepresentation rdfObject = this.indexService.getObjectForUri(modelURI);
+        RdfRepresentation rdfObject = this.indexService.getObjectForUri(uri);
 
         if (rdfObject instanceof nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) {
             mav.addObject("model", (nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) rdfObject);
@@ -43,7 +41,7 @@ public class MainController {
         }
 
         mav.setViewName("model_not_found");
-        mav.addObject("modelURI", modelURI);
+        mav.addObject("modelURI", uri);
         return mav;
     }
 

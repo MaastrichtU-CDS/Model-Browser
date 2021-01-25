@@ -8,7 +8,7 @@
 <p>Welcome on the model commissioning station.</p>
 <h2>Available models</h2>
 <th:block th:each="model: ${models}">
-    <a th:href="'/model/' + ${model.key}">[[${model.value}]]</a> <br/>
+    <a th:href="@{model(uri=${model.key})}">[[${model.value}]]</a> <br/>
 </th:block>
 </body>
 </html>
