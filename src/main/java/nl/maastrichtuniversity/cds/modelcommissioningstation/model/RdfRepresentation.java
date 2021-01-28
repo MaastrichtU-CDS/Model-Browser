@@ -79,6 +79,15 @@ public abstract class RdfRepresentation {
         return this.identifier;
     }
 
+    @Override()
+    public String toString() {
+        if (this.properties.containsKey(RDFS.LABEL)) {
+            return this.properties.get(RDFS.LABEL).get(0).toString();
+        }
+
+        return this.identifier.stringValue();
+    }
+
     @Override
     public boolean equals(Object o) {
         boolean returnVal = false;
