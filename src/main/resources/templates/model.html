@@ -14,6 +14,16 @@
                 </th:block>
             </td>
         </tr>
+        <tr>
+            <td>Algorithm type(s):</td>
+            <td>
+                <th:block th:each="algorithm: ${model.algorithms}">
+                    <th:block th:each="type: ${algorithm.types}">
+                        <span th:text="${type}"/>
+                    </th:block>
+                </th:block>
+            </td>
+        </tr>
 </table>
 
 <h2>Information elements needed</h2>

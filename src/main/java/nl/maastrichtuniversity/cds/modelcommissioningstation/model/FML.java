@@ -12,4 +12,5 @@ public class FML {
     public static final IRI HAS_OBJECTIVE = SimpleValueFactory.getInstance().createIRI(NAMESPACE, "has_objective");
     public static final IRI NEEDS_INFORMATION_ELEMENT = SimpleValueFactory.getInstance().createIRI(NAMESPACE, "needs_information_element");
     public static final IRI IS_VARIABLE_TYPE = SimpleValueFactory.getInstance().createIRI(NAMESPACE, "is_variable_type");
+    public static final IRI CONTAINS_ALGORITHM = SimpleValueFactory.getInstance().createIRI(NAMESPACE, "contains_algorithm");
 }

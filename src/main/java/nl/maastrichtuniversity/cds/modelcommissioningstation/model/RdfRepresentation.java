@@ -79,6 +79,10 @@ public abstract class RdfRepresentation {
         return this.identifier;
     }
 
+    public List getTypes() {
+        return this.properties.get(RDF.TYPE);
+    }
+
     @Override()
     public String toString() {
         if (this.properties.containsKey(RDFS.LABEL)) {
