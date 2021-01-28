@@ -4,21 +4,31 @@
 </head>
 
 <body>
-<h1 th:utext="${model.label}"/>
+<h1 th:utext="${model}"/>
 <table>
         <tr>
             <td>Objective:</td>
             <td>
                 <th:block th:each="objective: ${model.objectives}">
-                    <span th:text="${objective.label}"/>
+                    <span th:text="${objective}"/>
                 </th:block>
             </td>
         </tr>
+</table>
+
+<h2>Information elements needed</h2>
+<table>
+    <tr>
+        <th>Information element</th>
+        <th>Variable type</th>
+    </tr>
         <th:block th:each="informationElement: ${model.informationElements}">
             <tr>
-                <td>Needs information element:</td>
                 <td>
                     <span th:text="${informationElement.classLabel}"/>
+                </td>
+                <td>
+                    <span th:text="${informationElement.variableType}"/>
                 </td>
             </tr>
         </th:block>

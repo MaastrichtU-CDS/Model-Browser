@@ -30,4 +30,9 @@ public class InformationElement extends RdfRepresentation {
 
         return returnLabel;
     }
+
+    public RdfRepresentation getVariableType() {
+        RdfRepresentation varTypeObj = (RdfRepresentation) this.properties.get(FML.IS_VARIABLE_TYPE).get(0);
+        return (RdfRepresentation) varTypeObj.properties.get(RDF.TYPE).get(0);
+    }
 }
