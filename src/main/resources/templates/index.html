@@ -6,6 +6,17 @@
 <body>
 <h1>Welcome</h1>
 <p>Welcome on the model commissioning station.</p>
+
+<h2>Search a model (basic)</h2>
+<p>Please type some text below to search for a model.</p>
+<form action="#" th:action="@{/basicSearch}" th:object="${searchOptions}" method="post">
+    <input type="text" id="searchString" name="searchString" width="100%" th:field="*{searchString}"/>
+    <input type="submit" value="Search"/>
+</form>
+
+<h2>Search a model (advanced)</h2>
+<p>Please enter the model characteristics below to search.</p>
+
 <h2>Available models</h2>
 <th:block th:each="model: ${models}">
     <a th:href="@{model(uri=${model.key})}">[[${model.value}]]</a> <br/>
