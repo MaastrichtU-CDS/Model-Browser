@@ -1,4 +1,4 @@
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>Model Commissioning Station</title>
 </head>
@@ -43,5 +43,10 @@
             </tr>
         </th:block>
 </table>
+<h2>Validation</h2>
+<form method="get" th:action="@{/validation/new}">
+    <input type="hidden" id="uri" name="uri" th:value="${model.identifier}"/>
+    <input type="submit" value="Validate model"/>
+</form>
 </body>
 </html>

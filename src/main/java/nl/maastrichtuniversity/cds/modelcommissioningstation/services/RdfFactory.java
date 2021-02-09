@@ -1,9 +1,6 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
@@ -76,6 +73,14 @@ abstract class RdfFactory {
     }
 
     void addStatement(IRI subject, IRI predicate, Value object) {
+        if (this.context != null) {
+            this.conn.add(this.vf.createStatement(subject, predicate, object, this.context));
+        } else {
+            this.conn.add(this.vf.createStatement(subject, predicate, object));
+        }
+    }
+
+    void addStatement(BNode subject, IRI predicate, Value object) {
         if (this.context != null) {
             this.conn.add(this.vf.createStatement(subject, predicate, object, this.context));
         } else {
