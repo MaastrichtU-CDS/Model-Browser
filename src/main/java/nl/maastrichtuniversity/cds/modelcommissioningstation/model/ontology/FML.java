@@ -1,4 +1,4 @@
-package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
+package nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;

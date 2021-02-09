@@ -1,9 +1,9 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology.FML;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 import java.util.List;
