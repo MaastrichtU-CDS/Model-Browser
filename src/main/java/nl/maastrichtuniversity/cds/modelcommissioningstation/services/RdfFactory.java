@@ -1,7 +1,10 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.*;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -17,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-abstract class RdfFactory {
+public abstract class RdfFactory {
     private Logger logger = Logger.getLogger(this.getClass().toString());
     private Repository repo = null;
     RepositoryConnection conn = null;
@@ -131,5 +134,63 @@ abstract class RdfFactory {
         }
 
         this.conn = repo.getConnection();
+    }
+
+    /**
+     * Get list of class types for a given URI
+     * @param uri: URI (IRI) to get the class types for
+     * @return List of IRI objects representing the object type
+     */
+    private List<IRI> getClassTypesForUri(IRI uri) {
+        RepositoryResult<Statement> statementsType = this.conn.getStatements(uri, RDF.TYPE, null);
+        List<IRI> classTypes = new ArrayList<IRI>();
+        while(statementsType.hasNext()) {
+            classTypes.add((IRI)statementsType.next().getObject());
+        }
+
+        return classTypes;
+    }
+
+    /**
+     * This function determines the Class type in a given RdfFactory implementation
+     * @param classTypes: List of IRIs representing the current uri
+     * @param uri: the URI (as IRI) to represent and determine
+     * @param allStatements: All statements concerning the given URI
+     * @return RdfRepresentation to specify the given URI. This can be a SimpleRdfRepresentation object,
+     * or another implementation of RdfRepresentation
+     */
+    public abstract RdfRepresentation determineClassType(List<IRI> classTypes, IRI uri, List<Statement> allStatements);
+
+    /**
+     * Get RDF object for a specific given URI
+     * @param uri: IRI representation of the URI
+     * @return RdfRepresentation implementation
+     */
+    public RdfRepresentation getObjectForUri(IRI uri) {
+        RdfRepresentation returnObject = null;
+
+        List<IRI> classTypes = this.getClassTypesForUri(uri);
+        RepositoryResult<Statement> statementsModel = this.conn.getStatements(uri, null, null);
+        List<Statement> allStatements = new ArrayList<Statement>();
+        while(statementsModel.hasNext()) {
+            allStatements.add(statementsModel.next());
+        }
+
+        returnObject = this.determineClassType(classTypes, uri, allStatements);
+
+        if (returnObject == null) {
+            returnObject = new SimpleRdfRepresentation(uri, allStatements, this);
+        }
+
+        return returnObject;
+    }
+
+    /**
+     * Get RDF object for a specific given URI
+     * @param uri: String representation of the URI
+     * @return RdfRepresentation implementation
+     */
+    public RdfRepresentation getObjectForUri(String uri) {
+        return getObjectForUri(SimpleValueFactory.getInstance().createIRI(uri));
     }
 }

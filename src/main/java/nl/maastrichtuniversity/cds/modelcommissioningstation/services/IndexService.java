@@ -109,27 +109,11 @@ public class IndexService extends RdfFactory {
         return retResult;
     }
 
-    private List<IRI> getClassTypesForUri(IRI uri) {
-        RepositoryResult<Statement> statementsType = this.conn.getStatements(uri, RDF.TYPE, null);
-        List<IRI> classTypes = new ArrayList<IRI>();
-        while(statementsType.hasNext()) {
-            classTypes.add((IRI)statementsType.next().getObject());
-        }
-
-        return classTypes;
-    }
-
-    public RdfRepresentation getObjectForUri(IRI uri) {
+    @Override
+    public RdfRepresentation determineClassType(List<IRI> classTypes, IRI uri, List<Statement> allStatements) {
         RdfRepresentation returnObject = null;
 
-        List<IRI> classTypes = this.getClassTypesForUri(uri);
-        RepositoryResult<Statement> statementsModel = this.conn.getStatements(uri, null, null);
-        List<Statement> allStatements = new ArrayList<Statement>();
-        while(statementsModel.hasNext()) {
-            allStatements.add(statementsModel.next());
-        }
-
-        if (classTypes.contains(Model.CLASS_URI)) {
+        if (classTypes.contains(nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model.CLASS_URI)) {
             returnObject = new Model(uri, allStatements, this);
         }
 
@@ -141,15 +125,7 @@ public class IndexService extends RdfFactory {
             returnObject = new InformationElement(uri, allStatements, this);
         }
 
-        if (returnObject == null) {
-            returnObject = new SimpleRdfRepresentation(uri, allStatements, this);
-        }
-
         return returnObject;
-    }
-
-    public RdfRepresentation getObjectForUri(String uri) {
-        return getObjectForUri(SimpleValueFactory.getInstance().createIRI(uri));
     }
 
 }

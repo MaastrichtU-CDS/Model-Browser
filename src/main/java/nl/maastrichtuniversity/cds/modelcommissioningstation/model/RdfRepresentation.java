@@ -1,11 +1,10 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 
-import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.services.RdfFactory;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.repository.RepositoryResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,11 +15,11 @@ public abstract class RdfRepresentation {
     Map<IRI, List> properties;
     Map<IRI, List> references;
     public final IRI identifier;
-    IndexService indexService;
+    RdfFactory rdfFactory;
 
-    public RdfRepresentation(IRI identifier, List<Statement> statements, IndexService indexService) {
+    public RdfRepresentation(IRI identifier, List<Statement> statements, RdfFactory rdfFactory) {
         this.identifier = identifier;
-        this.indexService = indexService;
+        this.rdfFactory = rdfFactory;
         this.properties = new HashMap<IRI, List>();
         this.references = new HashMap<IRI, List>();
         this.processStatements(statements);
@@ -30,7 +29,7 @@ public abstract class RdfRepresentation {
         for(Statement stmt : statements) {
             if (stmt.getSubject().stringValue().equals(identifier.stringValue())) {
                 if (stmt.getObject() instanceof IRI) {
-                    RdfRepresentation object = this.indexService.getObjectForUri((IRI) stmt.getObject());
+                    RdfRepresentation object = this.rdfFactory.getObjectForUri((IRI) stmt.getObject());
                     if (object != null) {
                         this.addProperty(stmt.getPredicate(), object);
                     } else {

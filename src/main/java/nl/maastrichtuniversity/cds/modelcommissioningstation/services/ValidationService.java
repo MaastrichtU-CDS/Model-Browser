@@ -1,10 +1,12 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
 import nl.maastrichtuniversity.cds.modelcommissioningstation.helperObjects.AppProperties;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.RdfRepresentation;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology.DateTimeHelper;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology.FML;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,5 +54,10 @@ public class ValidationService extends RdfFactory {
         this.addStatement(statusInstance, RDF.TYPE, FML.REQUESTED);
 
         return validationRequestIri.toString();
+    }
+
+    @Override
+    public RdfRepresentation determineClassType(List<IRI> classTypes, IRI uri, List<Statement> allStatements) {
+        return null;
     }
 }
