@@ -11,6 +11,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +52,7 @@ public class ValidationService extends RdfFactory {
 
         this.addStatement(validationRequestIri, RDF.TYPE, FML.VALIDATION_REQUEST);
         this.addStatement(validationRequestIri, FML.AT_TIME,
-                vf.createLiteral(DateTimeHelper.xsdDateTimeFormat.format(curTime), "xsd:dateTime"));
+                vf.createLiteral(DateTimeHelper.xsdDateTimeFormat.format(curTime), XMLSchema.DATETIME));
         this.addStatement(validationRequestIri, FML.ABOUT_MODEL, modelIdentifier);
         BNode statusInstance = vf.createBNode();
         this.addStatement(validationRequestIri, FML.HAS_STATUS, statusInstance);

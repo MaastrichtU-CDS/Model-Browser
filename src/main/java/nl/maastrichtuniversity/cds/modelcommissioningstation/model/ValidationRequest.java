@@ -6,6 +6,8 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ValidationRequest extends RdfRepresentation {
@@ -19,7 +21,8 @@ public class ValidationRequest extends RdfRepresentation {
         List<Object> properties = this.properties.get(FML.AT_TIME);
 
         if (properties.size() > 0) {
-            return properties.get(0).toString();
+            LocalDateTime dt = (LocalDateTime) properties.get(0);
+            return dt.format(DateTimeFormatter.ofPattern("dd-MM-YYYY HH:mm:ss"));
         }
 
         return "";
