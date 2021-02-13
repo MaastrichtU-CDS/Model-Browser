@@ -1,7 +1,6 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.*;
-import nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model;
 import org.eclipse.rdf4j.model.*;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -17,7 +16,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 public abstract class RdfFactory {
@@ -138,10 +136,10 @@ public abstract class RdfFactory {
 
     /**
      * Get list of class types for a given URI
-     * @param uri: URI (IRI) to get the class types for
+     * @param uri: Resource (IRI) to get the class types for
      * @return List of IRI objects representing the object type
      */
-    private List<IRI> getClassTypesForUri(IRI uri) {
+    private List<IRI> getClassTypesForUri(Resource uri) {
         RepositoryResult<Statement> statementsType = this.conn.getStatements(uri, RDF.TYPE, null);
         List<IRI> classTypes = new ArrayList<IRI>();
         while(statementsType.hasNext()) {
@@ -159,14 +157,14 @@ public abstract class RdfFactory {
      * @return RdfRepresentation to specify the given URI. This can be a SimpleRdfRepresentation object,
      * or another implementation of RdfRepresentation
      */
-    public abstract RdfRepresentation determineClassType(List<IRI> classTypes, IRI uri, List<Statement> allStatements);
+    public abstract RdfRepresentation determineClassType(List<IRI> classTypes, Resource uri, List<Statement> allStatements);
 
     /**
      * Get RDF object for a specific given URI
      * @param uri: IRI representation of the URI
      * @return RdfRepresentation implementation
      */
-    public RdfRepresentation getObjectForUri(IRI uri) {
+    public RdfRepresentation getObjectForUri(Resource uri) {
         RdfRepresentation returnObject = null;
 
         List<IRI> classTypes = this.getClassTypesForUri(uri);

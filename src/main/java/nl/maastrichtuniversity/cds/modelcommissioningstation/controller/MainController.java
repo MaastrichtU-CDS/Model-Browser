@@ -1,6 +1,7 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.controller;
 
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.RdfRepresentation;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ValidationRequest;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class MainController {
 
         if (rdfObject instanceof nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) {
             nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model myModel = (nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) rdfObject;
-            List<RdfRepresentation> validationRequests = validationService.getValidationRequestsForModel(myModel);
+            List<ValidationRequest> validationRequests = validationService.getValidationRequestsForModel(myModel);
 
             mav.addObject("model", myModel);
             mav.addObject("validationRequests", validationRequests);

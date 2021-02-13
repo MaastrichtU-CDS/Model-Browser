@@ -2,6 +2,7 @@ package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.RdfFactory;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
@@ -14,10 +15,10 @@ import java.util.Map;
 public abstract class RdfRepresentation {
     Map<IRI, List> properties;
     Map<IRI, List> references;
-    public final IRI identifier;
+    public final Resource identifier;
     RdfFactory rdfFactory;
 
-    public RdfRepresentation(IRI identifier, List<Statement> statements, RdfFactory rdfFactory) {
+    public RdfRepresentation(Resource identifier, List<Statement> statements, RdfFactory rdfFactory) {
         this.identifier = identifier;
         this.rdfFactory = rdfFactory;
         this.properties = new HashMap<IRI, List>();
@@ -36,7 +37,7 @@ public abstract class RdfRepresentation {
                         this.addProperty(stmt.getPredicate(), stmt.getObject());
                     }
                 } else {
-                    this.addProperty(stmt.getPredicate(), stmt.getObject().stringValue());
+                    this.addProperty(stmt.getPredicate(), stmt.getObject());
                 }
             }
 
@@ -74,7 +75,7 @@ public abstract class RdfRepresentation {
         return labelFound;
     }
 
-    public IRI getIdentifier() {
+    public Resource getIdentifier() {
         return this.identifier;
     }
 

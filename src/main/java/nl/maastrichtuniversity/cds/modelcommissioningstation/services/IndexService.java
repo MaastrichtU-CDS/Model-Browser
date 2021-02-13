@@ -3,9 +3,9 @@ package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.helperObjects.AppProperties;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.*;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -110,7 +110,7 @@ public class IndexService extends RdfFactory {
     }
 
     @Override
-    public RdfRepresentation determineClassType(List<IRI> classTypes, IRI uri, List<Statement> allStatements) {
+    public RdfRepresentation determineClassType(List<IRI> classTypes, Resource uri, List<Statement> allStatements) {
         RdfRepresentation returnObject = null;
 
         if (classTypes.contains(nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model.CLASS_URI)) {

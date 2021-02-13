@@ -55,8 +55,8 @@
     </tr>
     <th:block th:each="validationRequest: ${validationRequests}">
         <tr>
-            <td><span th:text="${validationRequest.identifier}"/></td>
-            <td><span th:text="${validationRequest.identifier}"/></td>
+            <td><span th:text="${validationRequest.dateTime}"/></td>
+            <td><span th:text="${validationRequest.getStatus}"/></td>
         </tr>
     </th:block>
 </table>
