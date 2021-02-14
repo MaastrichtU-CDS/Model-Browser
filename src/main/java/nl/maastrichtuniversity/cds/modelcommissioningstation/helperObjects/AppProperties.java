@@ -10,6 +10,9 @@ import org.springframework.context.annotation.PropertySource;
 public class AppProperties {
     /////////////////////////Validation repository properties/////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
+    @Value("${validation.enabled}")
+    @Getter private boolean validationEnabled;
+
     @Value("${validation.repoType}")
     @Getter private String validationRepoType;
 

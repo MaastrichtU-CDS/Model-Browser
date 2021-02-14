@@ -1,5 +1,6 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.controller;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.helperObjects.AppProperties;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.RdfRepresentation;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ValidationRequest;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
@@ -21,6 +22,8 @@ public class MainController {
     private IndexService indexService;
     @Autowired
     private ValidationService validationService;
+    @Autowired
+    private AppProperties appProperties;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -41,10 +44,13 @@ public class MainController {
 
         if (rdfObject instanceof nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) {
             nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model myModel = (nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model) rdfObject;
-            List<ValidationRequest> validationRequests = validationService.getValidationRequestsForModel(myModel);
-
             mav.addObject("model", myModel);
-            mav.addObject("validationRequests", validationRequests);
+
+            if (appProperties.isValidationEnabled()) {
+                List<ValidationRequest> validationRequests = validationService.getValidationRequestsForModel(myModel);
+                mav.addObject("validationRequests", validationRequests);
+            }
+            mav.addObject("validationEnabled", appProperties.isValidationEnabled());
             mav.setViewName("model");
             return mav;
         }

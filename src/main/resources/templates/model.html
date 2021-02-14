@@ -43,22 +43,24 @@
             </tr>
         </th:block>
 </table>
-<h2>Validation</h2>
-<form method="get" th:action="@{/validation/new}">
-    <input type="hidden" id="uri" name="uri" th:value="${model.identifier}"/>
-    <input type="submit" value="Validate model!"/>
-</form>
-<table>
-    <tr>
-        <th>Date and time</th>
-        <th>Status</th>
-    </tr>
-    <th:block th:each="validationRequest: ${validationRequests}">
+<div th:if="${validationEnabled}">
+    <h2>Validation</h2>
+    <form method="get" th:action="@{/validation/new}">
+        <input type="hidden" id="uri" name="uri" th:value="${model.identifier}"/>
+        <input type="submit" value="Validate model!"/>
+    </form>
+    <table>
         <tr>
-            <td><span th:text="${validationRequest.dateTime}"/></td>
-            <td><span th:text="${validationRequest.getStatus}"/></td>
+            <th>Date and time</th>
+            <th>Status</th>
         </tr>
-    </th:block>
-</table>
+        <th:block th:each="validationRequest: ${validationRequests}">
+            <tr>
+                <td><span th:text="${validationRequest.dateTime}"/></td>
+                <td><span th:text="${validationRequest.getStatus}"/></td>
+            </tr>
+        </th:block>
+    </table>
+</div>
 </body>
 </html>
