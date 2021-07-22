@@ -7,17 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-      - id: repository_lowercase
-        uses: ASzc/change-string-case-action@v1
-        with:
-          string: ${{ github.repository }}
-      - name: downcase REPO
-        run: |
-          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -27,6 +16,30 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: mvn clean package
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+         name: de-sy-file
+         path: target/
+  
+  containerize:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: de-sy-file
+          path: target/
       - name: Build container
         id: docker_build
         uses: docker/build-push-action@v2
