@@ -1,9 +1,10 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology.FML;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class InformationElement extends RdfRepresentation {
     public static final IRI CLASS_URI = FML.INFORMATION_ELEMENT;
 
-    public InformationElement (IRI identifier, List<Statement> statements, IndexService indexService) {
+    public InformationElement (Resource identifier, List<Statement> statements, IndexService indexService) {
         super(identifier, statements, indexService);
     }
 

@@ -1,26 +1,33 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.model;
 
-import nl.maastrichtuniversity.cds.modelcommissioningstation.services.IndexService;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.model.ontology.DateTimeHelper;
+import nl.maastrichtuniversity.cds.modelcommissioningstation.services.RdfFactory;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.datatypes.XMLDatatypeUtil;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class RdfRepresentation {
+    private Logger logger = Logger.getLogger(this.getClass().toString());
     Map<IRI, List> properties;
     Map<IRI, List> references;
-    public final IRI identifier;
-    IndexService indexService;
+    public final Resource identifier;
+    RdfFactory rdfFactory;
 
-    public RdfRepresentation(IRI identifier, List<Statement> statements, IndexService indexService) {
+    public RdfRepresentation(Resource identifier, List<Statement> statements, RdfFactory rdfFactory) {
         this.identifier = identifier;
-        this.indexService = indexService;
+        this.rdfFactory = rdfFactory;
         this.properties = new HashMap<IRI, List>();
         this.references = new HashMap<IRI, List>();
         this.processStatements(statements);
@@ -30,14 +37,38 @@ public abstract class RdfRepresentation {
         for(Statement stmt : statements) {
             if (stmt.getSubject().stringValue().equals(identifier.stringValue())) {
                 if (stmt.getObject() instanceof IRI) {
-                    RdfRepresentation object = this.indexService.getObjectForUri((IRI) stmt.getObject());
+                    RdfRepresentation object = this.rdfFactory.getObjectForUri((IRI) stmt.getObject());
+
+                    // TODO: probably this statement is not needed anymore, since implementation of SimpleRdfRepresentation?
                     if (object != null) {
                         this.addProperty(stmt.getPredicate(), object);
                     } else {
                         this.addProperty(stmt.getPredicate(), stmt.getObject());
                     }
                 } else {
-                    this.addProperty(stmt.getPredicate(), stmt.getObject().stringValue());
+                    if (stmt.getObject() instanceof Literal) {
+                        Literal literalObj = (Literal) stmt.getObject();
+
+                        switch(literalObj.getDatatype().toString()) {
+                            case "http://www.w3.org/2001/XMLSchema#string":
+                            case "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString":
+                                this.addProperty(stmt.getPredicate(), literalObj.getLabel());
+                                break;
+                            case "http://www.w3.org/2001/XMLSchema#decimal":
+                                String value = literalObj.getLabel();
+                                this.addProperty(stmt.getPredicate(), new BigDecimal(value.toString()));
+                                break;
+                            case "http://www.w3.org/2001/XMLSchema#dateTime":
+                                this.addProperty(stmt.getPredicate(), LocalDateTime.parse(literalObj.getLabel().toString()));
+                                break;
+                            default:
+                                logger.info("Could not parse literal type " + literalObj.getDatatype().toString());
+                                this.addProperty(stmt.getPredicate(), literalObj);
+                                break;
+                        }
+                    } else {
+                        this.addProperty(stmt.getPredicate(), stmt.getObject());
+                    }
                 }
             }
 
@@ -75,7 +106,7 @@ public abstract class RdfRepresentation {
         return labelFound;
     }
 
-    public IRI getIdentifier() {
+    public Resource getIdentifier() {
         return this.identifier;
     }
 

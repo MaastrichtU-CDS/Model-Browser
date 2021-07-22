@@ -1,43 +1,36 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.services;
 
+import nl.maastrichtuniversity.cds.modelcommissioningstation.helperObjects.AppProperties;
 import nl.maastrichtuniversity.cds.modelcommissioningstation.model.*;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryResult;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public class IndexService {
+public class IndexService extends RdfFactory {
     public static final String INDEX_URL = "https://fairmodels.org/index.ttl";
-    private final Repository repo;
-    private final RepositoryConnection conn;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public IndexService() {
-        this.repo = new SailRepository(new MemoryStore());
-        this.repo.init();
-        this.conn = repo.getConnection();
+    public IndexService(AppProperties properties) {
+        super();
+        this.initializeRdfStore(properties.getModelRepoType(),
+                properties.getModelRepoUrl(),
+                properties.getModelRepoId(),
+                properties.getModelRepoUser(),
+                properties.getModelRepoPass());
 
         this.reloadIndex();
         this.fetchReferencedFiles();
@@ -116,27 +109,11 @@ public class IndexService {
         return retResult;
     }
 
-    private List<IRI> getClassTypesForUri(IRI uri) {
-        RepositoryResult<Statement> statementsType = this.conn.getStatements(uri, RDF.TYPE, null);
-        List<IRI> classTypes = new ArrayList<IRI>();
-        while(statementsType.hasNext()) {
-            classTypes.add((IRI)statementsType.next().getObject());
-        }
-
-        return classTypes;
-    }
-
-    public RdfRepresentation getObjectForUri(IRI uri) {
+    @Override
+    public RdfRepresentation determineClassType(List<IRI> classTypes, Resource uri, List<Statement> allStatements) {
         RdfRepresentation returnObject = null;
 
-        List<IRI> classTypes = this.getClassTypesForUri(uri);
-        RepositoryResult<Statement> statementsModel = this.conn.getStatements(uri, null, null);
-        List<Statement> allStatements = new ArrayList<Statement>();
-        while(statementsModel.hasNext()) {
-            allStatements.add(statementsModel.next());
-        }
-
-        if (classTypes.contains(Model.CLASS_URI)) {
+        if (classTypes.contains(nl.maastrichtuniversity.cds.modelcommissioningstation.model.Model.CLASS_URI)) {
             returnObject = new Model(uri, allStatements, this);
         }
 
@@ -148,15 +125,7 @@ public class IndexService {
             returnObject = new InformationElement(uri, allStatements, this);
         }
 
-        if (returnObject == null) {
-            returnObject = new SimpleRdfRepresentation(uri, allStatements, this);
-        }
-
         return returnObject;
-    }
-
-    public RdfRepresentation getObjectForUri(String uri) {
-        return getObjectForUri(SimpleValueFactory.getInstance().createIRI(uri));
     }
 
 }
