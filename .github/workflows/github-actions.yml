@@ -11,6 +11,10 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
+      - id: repository_lowercase
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ github.repository }}
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -25,4 +29,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ steps.extract_branch.outputs.branch }}
+          tags: ghcr.io/${{ steps.repository_lowercase.outputs.lowercase }}:${{ steps.extract_branch.outputs.branch }}
