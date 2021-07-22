@@ -15,6 +15,9 @@ jobs:
         uses: ASzc/change-string-case-action@v1
         with:
           string: ${{ github.repository }}
+      - name: downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -29,4 +32,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/${{ steps.repository_lowercase.outputs.lowercase }}:${{ steps.extract_branch.outputs.branch }}
+          tags: ghcr.io/${{ REPO }}:${{ steps.extract_branch.outputs.branch }}
