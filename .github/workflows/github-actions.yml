@@ -19,7 +19,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-         name: de-sy-file
+         name: maven-build-target
          path: target/
   
   containerize:
@@ -39,8 +39,11 @@ jobs:
       - name: download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: de-sy-file
+          name: maven-build-target
           path: target/
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: target/
       - name: Build container
         id: docker_build
         uses: docker/build-push-action@v2
