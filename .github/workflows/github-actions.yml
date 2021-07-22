@@ -49,5 +49,3 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ env.REPO }}:${{ steps.extract_branch.outputs.branch }}
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.DOCKERTOKEN }}
