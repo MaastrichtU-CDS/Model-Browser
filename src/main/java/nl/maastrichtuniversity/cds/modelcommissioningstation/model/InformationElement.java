@@ -19,7 +19,7 @@ public class InformationElement extends RdfRepresentation {
     public String getClassLabel() {
         String returnLabel = "unspecified";
 
-        List<Object> types = this.properties.get(RDF.TYPE);
+        List<Object> types = this.getProperties().get(RDF.TYPE);
         for (Object type : types) {
             if(type instanceof SimpleRdfRepresentation) {
                 SimpleRdfRepresentation foundObject = (SimpleRdfRepresentation) type;
@@ -33,7 +33,7 @@ public class InformationElement extends RdfRepresentation {
     }
 
     public RdfRepresentation getVariableType() {
-        RdfRepresentation varTypeObj = (RdfRepresentation) this.properties.get(FML.IS_VARIABLE_TYPE).get(0);
-        return (RdfRepresentation) varTypeObj.properties.get(RDF.TYPE).get(0);
+        RdfRepresentation varTypeObj = (RdfRepresentation) this.getProperties().get(FML.IS_VARIABLE_TYPE).get(0);
+        return (RdfRepresentation) varTypeObj.getProperties().get(RDF.TYPE).get(0);
     }
 }

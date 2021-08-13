@@ -18,7 +18,7 @@ public class ValidationRequest extends RdfRepresentation {
     }
 
     public String getDateTime() {
-        List<Object> properties = this.properties.get(FML.AT_TIME);
+        List<Object> properties = this.getProperties().get(FML.AT_TIME);
 
         if (properties.size() > 0) {
             LocalDateTime dt = (LocalDateTime) properties.get(0);
@@ -29,7 +29,7 @@ public class ValidationRequest extends RdfRepresentation {
     }
 
     public String getStatus() {
-        List<Object> statusObjects = this.properties.get(FML.HAS_STATUS);
+        List<Object> statusObjects = this.getProperties().get(FML.HAS_STATUS);
         if (statusObjects.size() > 0) {
             Resource statusObjectIdentifier = (Resource) statusObjects.get(0);
             RdfRepresentation statusBNodeObject = this.rdfFactory.getObjectForUri(statusObjectIdentifier);

@@ -16,10 +16,10 @@ public class Model extends RdfRepresentation {
     }
 
     public List getObjectives() {
-        return this.properties.get(FML.HAS_OBJECTIVE);
+        return this.getProperties().get(FML.HAS_OBJECTIVE);
     }
 
-    public List getAlgorithms() { return this.properties.get(FML.CONTAINS_ALGORITHM); }
+    public List getAlgorithms() { return this.getProperties().get(FML.CONTAINS_ALGORITHM); }
 
-    public List getInformationElements() { return this.properties.get(FML.NEEDS_INFORMATION_ELEMENT); }
+    public List getInformationElements() { return this.getProperties().get(FML.NEEDS_INFORMATION_ELEMENT); }
 }

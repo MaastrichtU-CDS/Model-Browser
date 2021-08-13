@@ -20,21 +20,41 @@ import java.util.logging.Logger;
 
 public abstract class RdfRepresentation {
     private Logger logger = Logger.getLogger(this.getClass().toString());
-    Map<IRI, List> properties;
+    private List<Statement> statements;
+    private Map<IRI, List> properties;
     Map<IRI, List> references;
     public final Resource identifier;
     RdfFactory rdfFactory;
 
-    public RdfRepresentation(Resource identifier, List<Statement> statements, RdfFactory rdfFactory) {
+    public RdfRepresentation(Resource identifier, List<Statement> statements, RdfFactory rdfFactory, boolean lazyLoading) {
         this.identifier = identifier;
         this.rdfFactory = rdfFactory;
+        this.statements = statements;
         this.properties = new HashMap<IRI, List>();
         this.references = new HashMap<IRI, List>();
-        this.processStatements(statements);
+        if (!lazyLoading) {
+            this.processStatements();
+        }
     }
 
-    private void processStatements(List<Statement> statements) {
-        for(Statement stmt : statements) {
+    public RdfRepresentation(Resource identifier, List<Statement> statements, RdfFactory rdfFactory) {
+        this(identifier, statements, rdfFactory, true);
+    }
+
+    /**
+     * Retrieve the list of local properties
+     * @return Map containing the IRI as key, and a list as value for every property
+     */
+    protected Map<IRI, List> getProperties() {
+        if(this.properties.isEmpty()) {
+            this.processStatements();
+        }
+
+        return this.properties;
+    }
+
+    private void processStatements() {
+        for(Statement stmt : this.statements) {
             if (stmt.getSubject().stringValue().equals(identifier.stringValue())) {
                 if (stmt.getObject() instanceof IRI) {
                     RdfRepresentation object = this.rdfFactory.getObjectForUri((IRI) stmt.getObject());
@@ -100,8 +120,9 @@ public abstract class RdfRepresentation {
     public String getLabel() {
         String labelFound = "unknown";
 
-        if (this.properties.containsKey(RDFS.LABEL)) {
-            labelFound = this.properties.get(RDFS.LABEL).get(0).toString();
+        properties = this.getProperties();
+        if (properties.containsKey(RDFS.LABEL)) {
+            labelFound = properties.get(RDFS.LABEL).get(0).toString();
         }
         return labelFound;
     }
@@ -111,13 +132,14 @@ public abstract class RdfRepresentation {
     }
 
     public List getTypes() {
-        return this.properties.get(RDF.TYPE);
+        return this.getProperties().get(RDF.TYPE);
     }
 
     @Override()
     public String toString() {
-        if (this.properties.containsKey(RDFS.LABEL)) {
-            return this.properties.get(RDFS.LABEL).get(0).toString();
+        properties = this.getProperties();
+        if (properties.containsKey(RDFS.LABEL)) {
+            return properties.get(RDFS.LABEL).get(0).toString();
         }
 
         return this.identifier.stringValue();
