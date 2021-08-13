@@ -21,7 +21,6 @@ import java.util.*;
 
 @Service
 public class IndexService extends RdfFactory {
-    public static final String INDEX_URL = "https://fairmodels.org/index.ttl";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public IndexService(AppProperties properties) {
@@ -32,7 +31,7 @@ public class IndexService extends RdfFactory {
                 properties.getModelRepoUser(),
                 properties.getModelRepoPass());
 
-        this.reloadIndex();
+        this.reloadIndex(properties);
         this.fetchReferencedFiles();
         logger.info("Done loading all models");
     }
@@ -41,13 +40,13 @@ public class IndexService extends RdfFactory {
      * Reload the index by removing the index triples from the RDF store,
      * and loading them again from the standard remote location.
      */
-    public void reloadIndex() {
+    public void reloadIndex(AppProperties properties) {
         this.logger.info("Clear and reload index");
-        this.conn.clear(SimpleValueFactory.getInstance().createIRI(IndexService.INDEX_URL));
+        this.conn.clear(SimpleValueFactory.getInstance().createIRI(properties.getModelIndexUrl()));
         try {
-            this.addRemoteFile(IndexService.INDEX_URL);
+            this.addRemoteFile(properties.getModelIndexUrl());
         } catch (IOException e) {
-            logger.warn("Index URL is incorrect/malformed (" + IndexService.INDEX_URL + ")");
+            logger.warn("Index URL is incorrect/malformed (" + properties.getModelIndexUrl() + ")");
         }
     }
 

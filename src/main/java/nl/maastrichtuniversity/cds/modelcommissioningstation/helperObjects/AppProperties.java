@@ -1,6 +1,8 @@
 package nl.maastrichtuniversity.cds.modelcommissioningstation.helperObjects;
 
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -8,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 //@PropertySource("classpath:application.properties")
 public class AppProperties {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     /////////////////////////Validation repository properties/////////////////////////
     //////////////////////////////////////////////////////////////////////////////////
     @Value("${validation.enabled}")
@@ -44,4 +47,8 @@ public class AppProperties {
 
     @Value("${validation.repoPass}")
     @Getter private String modelRepoPass;
+
+    @Value("${model.index.url:https://fairmodels.org/index.ttl}")
+    @Getter private String modelIndexUrl;
+
 }
