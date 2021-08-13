@@ -51,4 +51,6 @@ public class AppProperties {
     @Value("${model.index.url:https://fairmodels.org/index.ttl}")
     @Getter private String modelIndexUrl;
 
+    @Value("${ontology.file.location:https://raw.githubusercontent.com/MaastrichtU-CDS/FAIRmodels/main/ontology.owl}")
+    @Getter private String ontologyFileLocation;
 }

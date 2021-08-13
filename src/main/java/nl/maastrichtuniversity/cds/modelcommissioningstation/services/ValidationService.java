@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,13 @@ public class ValidationService extends RdfFactory {
                 properties.getValidationRepoId(),
                 properties.getValidationRepoUser(),
                 properties.getValidationRepoPass());
+
         this.context = vf.createIRI("http://" + this.getHostname() + "/validation/request");
+        try {
+            this.addRemoteFile(properties.getOntologyFileLocation());
+        } catch (IOException e) {
+            logger.warn("Could not add contents of " + properties.getOntologyFileLocation() + " to validation repository");
+        }
     }
 
     /**
