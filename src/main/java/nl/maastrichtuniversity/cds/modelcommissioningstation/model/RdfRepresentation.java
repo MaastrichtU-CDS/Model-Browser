@@ -58,13 +58,7 @@ public abstract class RdfRepresentation {
             if (stmt.getSubject().stringValue().equals(identifier.stringValue())) {
                 if (stmt.getObject() instanceof IRI) {
                     RdfRepresentation object = this.rdfFactory.getObjectForUri((IRI) stmt.getObject());
-
-                    // TODO: probably this statement is not needed anymore, since implementation of SimpleRdfRepresentation?
-                    if (object != null) {
-                        this.addProperty(stmt.getPredicate(), object);
-                    } else {
-                        this.addProperty(stmt.getPredicate(), stmt.getObject());
-                    }
+                    this.addProperty(stmt.getPredicate(), object);
                 } else {
                     if (stmt.getObject() instanceof Literal) {
                         Literal literalObj = (Literal) stmt.getObject();
