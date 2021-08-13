@@ -10,9 +10,13 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,20 @@ public abstract class RdfFactory {
             logger.info("Clearing context " + this.context.stringValue());
             this.conn.clear(this.context);
         }
+    }
+
+    /**
+     * Add a remote location to the current repository
+     * @param remoteLocation: string representation of the URL where the turtle file is located
+     */
+    public void addRemoteFile(String remoteLocation) throws IOException {
+        IRI graphIRI = SimpleValueFactory.getInstance().createIRI(remoteLocation);
+        this.conn.clear(graphIRI);
+        URL documentURL = new URL(remoteLocation);
+        RDFFormat format = Rio.getParserFormatForFileName(documentURL.toString()).orElse(RDFFormat.RDFXML);
+        org.eclipse.rdf4j.model.Model results = Rio.parse(documentURL.openStream(), remoteLocation, format);
+
+        this.conn.add(results, graphIRI);
     }
 
     /**

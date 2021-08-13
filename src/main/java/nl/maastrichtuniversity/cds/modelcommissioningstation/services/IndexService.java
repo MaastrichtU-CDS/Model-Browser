@@ -51,20 +51,6 @@ public class IndexService extends RdfFactory {
     }
 
     /**
-     * Add a remote location to the current repository
-     * @param remoteLocation: string representation of the URL where the turtle file is located
-     */
-    public void addRemoteFile(String remoteLocation) throws IOException {
-        IRI graphIRI = SimpleValueFactory.getInstance().createIRI(remoteLocation);
-        this.conn.clear(graphIRI);
-        URL documentURL = new URL(remoteLocation);
-        RDFFormat format = Rio.getParserFormatForFileName(documentURL.toString()).orElse(RDFFormat.RDFXML);
-        org.eclipse.rdf4j.model.Model results = Rio.parse(documentURL.openStream(), remoteLocation, format);
-
-        this.conn.add(results, graphIRI);
-    }
-
-    /**
      * Search for the referenced files, as indicated in the index turtle file.
      * Remote files are added to the current in-memory RDF store.
      */
