@@ -56,6 +56,7 @@ public class IndexService extends RdfFactory {
      */
     public void addRemoteFile(String remoteLocation) throws IOException {
         IRI graphIRI = SimpleValueFactory.getInstance().createIRI(remoteLocation);
+        this.conn.clear(graphIRI);
         URL documentURL = new URL(remoteLocation);
         RDFFormat format = Rio.getParserFormatForFileName(documentURL.toString()).orElse(RDFFormat.RDFXML);
         org.eclipse.rdf4j.model.Model results = Rio.parse(documentURL.openStream(), remoteLocation, format);
