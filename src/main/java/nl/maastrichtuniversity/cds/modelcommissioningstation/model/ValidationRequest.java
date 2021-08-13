@@ -28,15 +28,15 @@ public class ValidationRequest extends RdfRepresentation {
         return "";
     }
 
-    public String getStatus() {
+    public RdfRepresentation getStatus() {
         List<Object> statusObjects = this.getProperties().get(FML.HAS_STATUS);
         if (statusObjects.size() > 0) {
             Resource statusObjectIdentifier = (Resource) statusObjects.get(0);
             RdfRepresentation statusBNodeObject = this.rdfFactory.getObjectForUri(statusObjectIdentifier);
-            List typesFound = statusBNodeObject.getTypes();
-            return typesFound.get(0).toString();
+            List<RdfRepresentation> typesFound = statusBNodeObject.getTypes();
+            return typesFound.get(0);
         }
 
-        return "Unknown";
+        return null;
     }
 }
