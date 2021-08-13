@@ -22,6 +22,6 @@ public class ValidationController {
     public ModelAndView requestValidation(@RequestParam("uri") String uri) {
         logger.info("Request to validate model: " + uri);
         validationService.requestValidation(uri);
-        return new ModelAndView("validationStatus");
+        return new ModelAndView("redirect:/model?uri=" + uri);
     }
 }
